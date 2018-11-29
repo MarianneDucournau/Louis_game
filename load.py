@@ -3,12 +3,14 @@ from Tkinter import *
 from PIL import Image, ImageTk
 from random import sample
 import os
+import re
 
 
 
 def list_images():
     """"
     List the images that are stored in IMAGES_PATH except '.DS_Store'
+    Return eg ['verte.png', 'bleue.png', 'violette.png', 'orange.png', 'jaune.png', 'rouge.png']
     """
 
     list_images = os.listdir(IMAGES_PATH)
@@ -40,32 +42,26 @@ def open_image(name_img_file):
     return photo
 
 
-def generate_list_random_int(list_images, n=2):
+def list_random_images(list_images, n=2):
     """"
-    Generate a list of unique random int of length n based on the length of list of images names
+    Generate a list of unique random images of length n based from list_images
+    Returns eg ['verte.png', 'orange.png']
     """
 
     assert (n <= len(list_images))
 
-    list_random_int = sample(range(0, len(list_images) - 1), n)
-    return list_random_int
+    list_random_images = sample(list_images, n)
+    return list_random_images
 
 
-def generate_one_random_int(list_random_int):
+
+def generate_list_photos(list_random_images):
     """"
-    Generate a random int from list_random_int
+    Generate the list of tk photos based on list_random_images
+    Returns a list of tk obkects
     """
 
-    one_random_int = sample(list_random_int, 1)
-    return one_random_int
-
-
-def generate_list_photos(list_images, list_random_int):
-    """"
-    Generate the list of tk photos based on the list of images names and the list of random int
-    """
-
-    list_photos = [open_image(list_images[i]) for i in list_random_int]
+    list_photos = [open_image(image) for image in list_random_images]
     return list_photos
 
 
@@ -80,27 +76,26 @@ def display_images(panned_window, list_photos):
     return panned_window
 
 
-def display_question(panned_window, one_int, list_images):
+def display_question(panned_window, one_image):
     """"
     Display question in panned_window
     """
 
-    panned_window.add(Label(panned_window, text='Montre la couleur {}'.format(list_images[one_int[0]]), anchor=CENTER))
+    panned_window.add(Label(panned_window, text='Montre la couleur {}'.format(re.sub('.png', '', one_image[0])), anchor=CENTER))
     panned_window.pack()
     return panned_window
 
 
 def main():
     window = create_window()
-    image_names = list_images()
-    print image_names
-    random_int = generate_list_random_int(list_images=image_names)
-    print(random_int)
-    photos = generate_list_photos(list_images=image_names, list_random_int=random_int)
+    all_images = list_images()
+    print all_images
+    random_images = list_random_images(list_images=all_images)
+    one_image = list_random_images(list_images=random_images, n=1)
+    print random_images; print one_image
+    photos = generate_list_photos(list_random_images=random_images)
     panned_window = display_images(window, photos)
-    one_int = generate_one_random_int(random_int)
-    panned_window = display_question(panned_window, one_int, image_names)
-    print(image_names[one_int[0]])
+    panned_window = display_question(panned_window, one_image)
     mainloop()
 
 
